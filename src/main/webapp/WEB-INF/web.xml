@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="http://xmlns.jcp.org/xml/ns/javaee"
+	xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_4_0.xsd"
+	id="WebApp_ID" version="4.0">
+	<display-name>K08JSPServlet</display-name>
+	<welcome-file-list>
+		<welcome-file>index.html</welcome-file>
+		<welcome-file>index.jsp</welcome-file>
+		<welcome-file>index.htm</welcome-file>
+		<welcome-file>default.html</welcome-file>
+		<welcome-file>default.jsp</welcome-file>
+		<welcome-file>HelloJSP.jsp</welcome-file>
+	</welcome-file-list>
+
+	<!-- 해당 프로젝트(웹어플리케이션) 전체에서 사용할 수 있는 컨텍스트 초기화 파라미터(매개변수)로 일종의 상수값이라 생각하면 
+		된다. -->
+	<context-param>
+		<param-name>INIT_PARAM</param-name>
+		<param-value>web.xml에 저장한 초기화 매개변수</param-value>
+	</context-param>
+
+	<context-param>
+		<param-name>OracleDriver</param-name>
+		<param-value>web.xml에 저장한 초기화 매개변수</param-value>
+	</context-param>
+
+	<!-- 오라클 접속 정보를 컨텍스트 초기화 파타미터로 등록 -->
+	<context-param>
+		<param-name>OracleDriver</param-name>
+		<param-value>oracle.jdbc.OracleDriver</param-value>
+	</context-param>
+	<context-param>
+		<param-name>OracleURL</param-name>
+		<param-value>jdbc:oracle:thin:@localhost:1521:xe</param-value>
+	</context-param>
+	<context-param>
+		<param-name>OracleId</param-name>
+		<param-value>musthave</param-value>
+	</context-param>
+	<context-param>
+		<param-name>OraclePwd</param-name>
+		<param-value>1234</param-value>
+	</context-param>
+
+	<!-- 세션 유지 시간 설정 : web.xml에서는 분단위로  -->
+	<session-config>
+		<session-timeout>15</session-timeout>
+	</session-config>
+
+	<!-- 웹어플리케이션에서 예외(에러) 발생 시 처리할 페이지를 저장한다. -->
+	<!-- 404 : Not found. 페이지를 찾을 수 없을 때 발생. 405 : Method not allowed. get/post 
+		방식으로 전송 시 해당 요청을 처리할 메서드가 없음 500 : Internal server error. 서버 내부 오류로 오타가 있거나 
+		로직에 문제가 있어 웹 서버가 요청을 처리할 수 없을 때 발생 ※ 에러페이지 처리는 실 서비스에서는 반드시 필요한 부분이지만 개발 
+		시에는 에러를 확인한 후 디버깅하면서 진행해야 하므로 개발이 완료될 때까지는 주석으로 처리해 두는 것이 좋다. -->
+
+	<!-- <error-page> <error-code>404</error-code> <location>/02ImplicitObject/Exception.jsp</location> 
+		</error-page> <error-page> <error-code>405</error-code> <location>/02ImplicitObject/Exception.jsp</location> 
+		</error-page> <error-page> <error-code>500</error-code> <location>/02ImplicitObject/Exception.jsp</location> 
+		</error-page> -->
+</web-app>

@@ -109,23 +109,184 @@ public class BoardDAO extends JDBConnect {
 		//List.jsp로 컬렉션을 반환한다.
 		return bbs;
 	}
+	//사용자가 입력한 내용을 board 테이블에 입력(insert) 처리한다.
+	public int insertWrite(BoardDTO dto) {
+		//입력결과 확인용 변수
+		int result = 0;
+		
+		try {
+			//인파라미터가 있는 동적 쿼리문 작성(사용자의 입력에 따라 달라짐)
+			String query = "INSERT INTO board ( " 
+					+ " num,title,content,id,visitcount) "
+					+ " VALUES ( "
+					+ " seq_board_num.NEXTVAL, ?, ?, ?, 0)";
+			//동적 퀴리문 실행을 위한 prepared 객체 생성
+			psmt = con.prepareStatement(query);
+			//인파라미터 설정
+			psmt.setString(1, dto.getTitle());
+			psmt.setString(2, dto.getContent());
+			psmt.setString(3, dto.getId());
+			//쿼리문 실행 : 행에 영향을 미치는 쿼리이므로 executeUpdate() 메서드 사용함
+			//입력에 성공하면 1, 실패하면 0을 반환한다.
+			result = psmt.executeUpdate();
+		}
+		catch (Exception e) {
+			System.out.println("게시물 입력 중 예외 발생");
+			e.printStackTrace();
+		}
+		return result;
+	}
+	//상세보기를 위해 매개변수로 전달된 일련번호에 해당하는 게시물을 인출한다.
+	public BoardDTO selectView(String num) {
+		
+		BoardDTO dto = new BoardDTO();
+		//join을 이용해서 member 테이블의 name 컬럼까지 가져온다.
+		String query = "SELECT B.*, M.name " 
+				+ " FROM member M inner join board B "
+				+ " on M.id=B.id "
+				+ " where num=?";
+		
+		try {
+			psmt = con.prepareStatement(query);
+			psmt.setString(1, num);
+			rs = psmt.executeQuery();
+			/*
+			일련번호는 중복되지 않으므로 if문으로 처리한다. 게시판 목록처럼
+			여러개의 레코드를 가져온다면 while문을 사용하면 된다.
+			 */
+			if (rs.next()) {
+				//DTO에 레코드의 내용을 추가한다.
+				dto.setNum(rs.getString(1));
+				dto.setTitle(rs.getString(2));//인덱스를 통해 값 인출
+				dto.setContent(rs.getString("content"));//컬럼명을 통해 값 인출
+				dto.setPostdate(rs.getDate("postdate"));//날짜타입이므로 getDate()로 인출
+				dto.setId(rs.getString("id"));
+				dto.setVisitcount(rs.getString(6));
+				dto.setName(rs.getString("name"));
+			}
+		}
+		catch (Exception e) {
+			System.out.println("게시물 상세보기 중 예외 발생");
+			e.printStackTrace();
+		}
+		return dto;
+	}
+	//게시물의 조회수를 1 증가시킨다.
+	public void updateVisitCount(String num) {
+		/*게시물의 일련번호를 매개변수로 받은 후 visitcount를 1 증가시킨다.
+		해당 컬럼은 number 타입이므로 덧셈이 가능하다.
+		*/
+		String query = "UPDATE board SET " 
+				+ " visitcount=visitcount+1 "
+				+ " where num=?";
+
+		try {
+			psmt = con.prepareStatement(query);
+			psmt.setString(1, num);
+			rs = psmt.executeQuery();
+		}
+		catch (Exception e) {
+		System.out.println("게시물 조회수 증가 중 예외 발생");
+		e.printStackTrace();
+		}
+	}
+	//게시물 수정하기
+	public int updateEdit(BoardDTO dto) {
+		int result = 0;
+		
+		try {
+			//특정 일련번호에 해당하는 게시물을 수정한다.
+			String query = "update board set "
+					+ " title=?, content=? "
+					+ " where num=?";
+			
+			psmt = con.prepareStatement(query);
+			psmt.setString(1, dto.getTitle());
+			psmt.setString(2, dto.getContent());
+			psmt.setString(3, dto.getNum());
+			//적용된(수정된) 행의 갯수가 반환된다.
+			result = psmt.executeUpdate();
+		}
+		catch (Exception e) {
+			System.out.println("게시물 수정 중 예외 발생");
+			e.printStackTrace();
+		}
+		return result;
+	}
+	//게시물 삭제를 위해 delete 쿼리문을 실행한다.
+	public int deletePost(BoardDTO dto) {
+		int result = 0;
+		
+		try {
+			String query = "DELETE FROM board WHERE num=?";
+			psmt = con.prepareStatement(query);
+			psmt.setString(1, dto.getNum());
+			//적용된(삭제된) 행의 갯수를 반환한다.
+			result = psmt.executeUpdate();
+		}
+		catch (Exception e) {
+			System.out.println("게시물 삭제 중 예외 발생");
+			e.printStackTrace();
+		}
+		return result;
+	}
+	
+	//게시판의 페이징 처리를 위한 메서드
+	public List<BoardDTO> selectListPage(Map<String, Object> map) {
+		List<BoardDTO> bbs = new ArrayList<BoardDTO>();
+		
+		/*
+		3개의 서브쿼리문을 통해 각 페이지에 출력할 게시판 목록을
+		인출할 수 있는 쿼리문을 작성한다. (자세한 내용은 JDBC 실습을.sql 참조)
+		 */
+		String query = " SELECT * FROM ( "
+					 + " 	SELECT tb.*, ROWNUM rNum FROM ( "
+					 + "		SELECT * FROM board ";
+		//검색조건추가. 검색어가 있는 경우에만 where절이 추가된다.
+		if (map.get("searchWord") != null) {
+			query += " WHERE " + map.get("searchField") + " "
+					+ " LIKE '%" + map.get("searchWord") + "%'";
+		}
+		query += " 		ORDER BY num DESC "
+				+ "		) Tb "
+				+ " ) "
+				+ " WHERE rNum BETWEEN ? AND ?";
+		/*
+		between절 대신 비교연산자를 사용하면 다음과 같이 수정할 수 있다.
+		=> WHERE rNum>=? AND rNum<=?
+		 */
+		
+		try {
+			psmt = con.prepareStatement(query);
+			/*
+			인파라미터 설정 : JSP에서 해당 페이지에 출력할 게시물의 구간을
+				계산한 후 Map 컬렉션에 저장하고 DAO로 전달하면 해당 값으로
+				쿼리문을 완성한다.
+			 */
+			psmt.setString(1, map.get("start").toString());
+			psmt.setString(2, map.get("end").toString());
+			//쿼리문 실행
+			rs = psmt.executeQuery();
+			while (rs.next()) {
+				BoardDTO dto = new BoardDTO();
+				dto.setNum(rs.getString("num"));
+				dto.setTitle(rs.getString("title"));
+				dto.setContent(rs.getString("content"));
+				dto.setPostdate(rs.getDate("postdate"));
+				dto.setId(rs.getString("id"));
+				dto.setVisitcount(rs.getString("visitcount"));
+
+				//반환할 결과 목록을 List 컬렉션에 추가한다.
+				bbs.add(dto);
+			}
+		}
+		catch (Exception e) {
+			System.out.println("게시물 조회 중 예외 발생");
+			e.printStackTrace();
+		}
+		return bbs;
+	}
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

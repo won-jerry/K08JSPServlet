@@ -1,0 +1,26 @@
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300&display=swap');
+*{margin:0px auto; font-family: 'Noto Sans KR', sans-serif;}
+.AllWrap{padding:50px;}
+.wrap_regiform{border: 3px solid black; width: 720px; padding:5px 10px;}
+.wrap_regiform>p{text-align: right;}
+.wrap_regiform table{border-top: 2px solid #000000; border-left:1px solid silver; border-right:1px solid silver; border-bottom:1px solid silver; width:100%;}
+.wrap_regiform tr td:nth-child(1){border: 0px solid blue; font-weight: bold; font-size: 0.9em; padding:5px 0 5px 40px;}
+.wrap_regiform tr td:nth-child(1) span.red{color:red;}
+.wrap_regiform tr td:nth-child(2){border: 0px solid blue; font-size: 0.8em; padding:5px 0 5px 5px;}
+.wrap_regiform tr td:nth-child(2) .comment{ color: #777777;}
+.wrap_regiform tr td:nth-child(2) img.pick{ position: relative; top:11px; left:-4px; margin-top:-5px; width:33px;}
+.wrap_regiform tr td:nth-child(2) button{background-color: #333333; color:#ffffff; font-size: 1em; padding:5px; width:100px; border:2px solid #333333;}
+.wrap_regiform tr td:nth-child(2) button:hover{background-color: #727272; cursor:pointer;}
+.wrap_regiform tr td:nth-child(2) label{position: relative; height:20px; top:-2px; left:10px;}
+.wrap_regiform td input{padding:6px; border: 1px solid #cccccc;}
+.wrap_regiform td select{padding:5px; border: 1px solid #cccccc;}
+.w01{width:320px;}
+.w02{width:200px;}
+.w03{width:100px;}
+.w04{width:230px;}
+.w05{width:150px;}
+.w06{width:80px;}
+.s01{width:140px;}
+.s02{width:70px;}
+.btn_search{background-color: #333333; color:#ffffff; font-size: 1em; padding:5px; width:100px; border:2px solid #333333;}
+.btn_search:hover{background-color: #727272; cursor:pointer;}

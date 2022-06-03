@@ -1,6 +1,6 @@
-<%@page import="common.Person"%>
+<%@ page import="common.Person"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
-    pageEncoding="UTF-8"%>
+    pageEncoding="UTF-8"%>    
 <h4>Include 페이지</h4>
 <%
 int pInteger2 = (Integer)(pageContext.getAttribute("pageInteger"));

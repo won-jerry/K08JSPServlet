@@ -13,17 +13,24 @@
 		<welcome-file>HelloJSP.jsp</welcome-file>
 	</welcome-file-list>
 
-	<!-- 해당 프로젝트(웹어플리케이션) 전체에서 사용할 수 있는 컨텍스트 초기화 파라미터(매개변수)로 일종의 상수값이라 생각하면 
+	<!-- 해당 프로젝트(웹애플리케이션) 전체에서 사용할 수 있는 컨텍스트 초기화 파라미터(매개변수)로 일종의 상수값이라 생각하면 
 		된다. -->
 	<context-param>
 		<param-name>INIT_PARAM</param-name>
 		<param-value>web.xml에 저장한 초기화 매개변수</param-value>
 	</context-param>
 
-	<context-param>
-		<param-name>OracleDriver</param-name>
-		<param-value>web.xml에 저장한 초기화 매개변수</param-value>
-	</context-param>
+	<!-- 웹애플리케이션에서 예외(에러) 발생시 처리할 페이지를 지정한다. -->
+	<!-- 404 : Not found. 페이지를 찾을 수 없을때 발생. 405 : Method not allowed. get / 
+		post 방식으로 전송시 해당 요청을 처리할 메서드가 없을때 발생. 500 : Internal server error. 서버 내부 
+		오류로 오타가 있거나 로직에 문제가 있어 웹 서버가 요청을 처리할 수 없을때 발생. ※ 에러페이지 처리는 실 서비스에서는 반드시 필요한 
+		부분이지만 개발시에는 에러를 확인한 후 디버깅하면서 진행해야 하므로 개발이 완료될때까지는 주석으로 처리해 두는것이 좋다. -->
+
+	<!-- <error-page> <error-code>404</error-code> <location>/02ImplicitObject/Exception.jsp</location> 
+		</error-page> <error-page> <error-code>405</error-code> <location>/02ImplicitObject/Exception.jsp</location> 
+		</error-page> <error-page> <error-code>500</error-code> <location>/02ImplicitObject/Exception.jsp</location> 
+		</error-page> -->
+
 
 	<!-- 오라클 접속 정보를 컨텍스트 초기화 파타미터로 등록 -->
 	<context-param>
@@ -43,14 +50,13 @@
 		<param-value>1234</param-value>
 	</context-param>
 
-	<!-- 세션 유지 시간 설정 : web.xml에서는 분단위로 -->
+	<!-- 세션유지시간 설정 : web.xml에서는 분단위로 지정한다. -->
 	<session-config>
 		<session-timeout>15</session-timeout>
 	</session-config>
 
-	<!-- 한글 깨짐에 대한 필터 설정 : 현재 개발중인 웹 어플리케이션 전체에 적용한다.
-			웹어플리케이션으로 들어오는 모든 요청에 대해 문자 인코딩을 UTF-8로 하겠다는
-			필터 설정이다. -->
+	<!-- 한글깨짐에 대한 필터설정 : 현재 개발중인 웹 애플리케이션 전체에 적용한다. 웹애플리케이션으로 들어오는 모든 요청에 대해 
+		문자 인코딩을 UTF-8로 하겠다는 필터 설정이다. -->
 	<filter>
 		<filter-name>SetCharEncoding</filter-name>
 		<filter-class>org.apache.catalina.filters.SetCharacterEncodingFilter</filter-class>
@@ -64,14 +70,34 @@
 		<url-pattern>/*</url-pattern>
 	</filter-mapping>
 
-	<!-- 웹어플리케이션에서 예외(에러) 발생 시 처리할 페이지를 저장한다. -->
-	<!-- 404 : Not found. 페이지를 찾을 수 없을 때 발생. 405 : Method not allowed. get/post 
-		방식으로 전송 시 해당 요청을 처리할 메서드가 없음 500 : Internal server error. 서버 내부 오류로 오타가 있거나 
-		로직에 문제가 있어 웹 서버가 요청을 처리할 수 없을 때 발생 ※ 에러페이지 처리는 실 서비스에서는 반드시 필요한 부분이지만 개발 
-		시에는 에러를 확인한 후 디버깅하면서 진행해야 하므로 개발이 완료될 때까지는 주석으로 처리해 두는 것이 좋다. -->
+	<!-- 게시판 페이징 처리를 위한 파라미터 추가 -->
+	<!-- 한 페이지에 출력할 게시물의 갯수 -->
+	<context-param>
+		<param-name>POSTS_PER_PAGE</param-name>
+		<param-value>10</param-value>
+	</context-param>
+	<context-param>
+		<param-name>PAGES_PER_BLOCK</param-name>
+		<param-value>5</param-value>
+	</context-param>
 
-	<!-- <error-page> <error-code>404</error-code> <location>/02ImplicitObject/Exception.jsp</location> 
-		</error-page> <error-page> <error-code>405</error-code> <location>/02ImplicitObject/Exception.jsp</location> 
-		</error-page> <error-page> <error-code>500</error-code> <location>/02ImplicitObject/Exception.jsp</location> 
-		</error-page> -->
+	<servlet>
+		<servlet-name>HelloServlet</servlet-name>
+		<servlet-class>servlet.HelloServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>HelloServlet</servlet-name>
+		<url-pattern>/13Servlet/HelloServlet.do</url-pattern>
+	</servlet-mapping>
+	
+	<servlet>
+		<servlet-name>DirectServletPrint</servlet-name>
+		<servlet-class>servlet.DirectServletPrint</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>DirectServletPrint</servlet-name>
+		<url-pattern>/13Servlet/DirectServletPrint.do</url-pattern>
+	</servlet-mapping>
+	
+
 </web-app>
